@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Self-Reporting Questionnaire (SRQ-29)</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #f5f5f3;
+      color: #1a1a1a;
+      min-height: 100vh;
+      padding: 2rem 1rem;
+    }
+    .container {
+      max-width: 700px;
+      margin: 0 auto;
+      background: #ffffff;
+      border-radius: 16px;
+      border: 0.5px solid #e0dfd8;
+      padding: 2rem;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+    }
+    .header { text-align: center; margin-bottom: 1.75rem; }
+    .header h1 { font-size: 22px; font-weight: 500; color: #1a1a1a; margin-bottom: 6px; }
+    .header p { font-size: 13px; color: #6b6b6b; line-height: 1.6; }
+    .info-box {
+      background: #e6f1fb; border: 0.5px solid #b5d4f4;
+      border-radius: 10px; padding: 12px 16px;
+      margin-bottom: 1.75rem; font-size: 13px; color: #042c53; line-height: 1.6;
+    }
+    .section-title {
+      font-size: 11px; font-weight: 600; color: #888; letter-spacing: 0.07em;
+      text-transform: uppercase; margin-bottom: 10px;
+    }
+    .identity-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 1.75rem; }
+    .identity-grid .full { grid-column: 1 / -1; }
+    .field-group { display: flex; flex-direction: column; gap: 5px; }
+    .field-group label { font-size: 12px; font-weight: 500; color: #555; }
+    .field-group input, .field-group textarea {
+      width: 100%; padding: 9px 12px; font-size: 13px;
+      border: 0.5px solid #d3d1c7; border-radius: 8px;
+      background: #fafaf8; color: #1a1a1a;
+      font-family: inherit; transition: border-color 0.15s;
+    }
+    .field-group input:focus, .field-group textarea:focus {
+      outline: none; border-color: #888; background: #fff;
+    }
+    .field-group textarea { resize: none; height: 64px; line-height: 1.5; }
+    .divider { border: none; border-top: 0.5px solid #e0dfd8; margin: 1.5rem 0; }
+    .progress-wrap { margin-bottom: 1.25rem; }
+    .progress-text {
+      font-size: 12px; color: #888; margin-bottom: 6px;
+      display: flex; justify-content: space-between;
+    }
+    .progress-bar-bg { height: 5px; background: #efefed; border-radius: 3px; }
+    .progress-bar-fill { height: 5px; background: #378add; border-radius: 3px; transition: width 0.3s; width: 0%; }
+    .group-header {
+      display: flex; align-items: center; gap: 8px;
+      margin: 1.5rem 0 0.5rem;
+      padding-bottom: 8px; border-bottom: 0.5px solid #e8e8e4;
+    }
+    .group-badge {
+      font-size: 11px; font-weight: 600; padding: 3px 10px;
+      border-radius: 20px; letter-spacing: 0.03em;
+    }
+    .badge-neurosis { background: #e6f1fb; color: #0c447c; }
+    .badge-napza { background: #faeeda; color: #633806; }
+    .badge-psiko { background: #faece7; color: #712b13; }
+    .badge-ptsd { background: #eaf3de; color: #27500a; }
+    .group-range { font-size: 11px; color: #aaa; }
+    .q-item {
+      display: flex; align-items: flex-start; gap: 12px;
+      padding: 9px 10px; border-radius: 8px; margin-bottom: 3px;
+      border: 0.5px solid transparent; transition: background 0.12s;
+    }
+    .q-item:hover { background: #f7f7f5; }
+    .q-num { font-size: 12px; color: #bbb; min-width: 22px; padding-top: 3px; }
+    .q-text { flex: 1; font-size: 13px; color: #1a1a1a; line-height: 1.55; }
+    .q-btns { display: flex; gap: 6px; flex-shrink: 0; }
+    .q-btn {
+      padding: 4px 14px; font-size: 12px; font-weight: 500;
+      border-radius: 20px; border: 1.5px solid #d3d1c7;
+      background: #fafaf8; color: #888; cursor: pointer;
+      transition: all 0.12s; font-family: inherit;
+    }
+    .q-btn:hover { background: #f0efed; }
+    .q-btn.ya-active { background: #b5d4f4; color: #042c53; border-color: #e53935; }
+    .q-btn.tidak-active { background: #efefed; color: #333; border-color: #e53935; }
+    .submit-btn {
+      width: 100%; padding: 13px; font-size: 14px; font-weight: 500;
+      background: #1a1a1a; border: none; border-radius: 10px;
+      cursor: pointer; color: #fff; margin-top: 1.75rem;
+      transition: all 0.15s; font-family: inherit;
+    }
+    .submit-btn:hover { background: #333; }
+    .submit-btn:disabled { background: #ccc; cursor: not-allowed; }
+
+    /* Result */
+    .result-header { text-align: center; margin-bottom: 1.5rem; }
+    .result-header h1 { font-size: 20px; font-weight: 500; color: #1a1a1a; }
+    .id-summary {
+      background: #f7f7f5; border-radius: 10px;
+      padding: 14px 16px; margin-bottom: 1.5rem;
+      display: grid; grid-template-columns: 1fr 1fr; gap: 6px 20px;
+    }
+    .id-row { font-size: 12px; color: #888; }
+    .id-row span { color: #1a1a1a; font-weight: 500; }
+    .score-grid {
+      display: grid; grid-template-columns: repeat(4, 1fr);
+      gap: 10px; margin-bottom: 1.5rem;
+    }
+    .score-metric {
+      background: #f7f7f5; border-radius: 10px;
+      padding: 14px 10px; text-align: center;
+    }
+    .score-metric .val { font-size: 26px; font-weight: 500; color: #1a1a1a; }
+    .score-metric .lbl { font-size: 10px; color: #888; margin-top: 4px; line-height: 1.4; }
+    .alert-box {
+      border-radius: 10px; padding: 12px 14px;
+      font-size: 13px; line-height: 1.6; margin-bottom: 10px;
+    }
+    .alert-box b { font-weight: 600; }
+    .alert-danger { background: #fcebeb; color: #501313; border: 0.5px solid #f7c1c1; }
+    .alert-warning { background: #faeeda; color: #412402; border: 0.5px solid #fac775; }
+    .alert-success { background: #eaf3de; color: #173404; border: 0.5px solid #c0dd97; }
+    .alert-info { background: #e6f1fb; color: #042c53; border: 0.5px solid #b5d4f4; }
+    .alert-neutral {
+      background: #f7f7f5; color: #666;
+      border: 0.5px solid #e0dfd8; font-size: 12px; margin-top: 8px;
+    }
+    .interp-header {
+      background: #fff; border: 0.5px solid #e0dfd8;
+      border-radius: 10px; padding: 14px 16px; margin-bottom: 12px;
+    }
+    .interp-header .t { font-size: 14px; font-weight: 500; color: #1a1a1a; margin-bottom: 2px; }
+    .interp-header .s { font-size: 12px; color: #888; }
+    .reset-btn {
+      font-size: 13px; color: #888; background: none; border: none;
+      cursor: pointer; padding: 10px 0; display: block;
+      margin: 1rem auto 0; font-family: inherit;
+    }
+    .reset-btn:hover { color: #1a1a1a; }
+    .hidden { display: none; }
+
+    @media (max-width: 520px) {
+      .container { padding: 1.25rem; }
+      .identity-grid { grid-template-columns: 1fr; }
+      .identity-grid .full { grid-column: 1; }
+      .score-grid { grid-template-columns: repeat(2, 1fr); }
+      .id-summary { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+
+    <!-- FORM VIEW -->
+    <div id="form-view">
+      <div class="header">
+        <h1>Self-Reporting Questionnaire (SRQ-29)</h1>
+        <p>Jawablah setiap pertanyaan berdasarkan kondisi Anda <strong>selama 30 hari terakhir</strong></p>
+      </div>
+
+      <div class="info-box">
+        ℹ️ Pilih <strong>Ya</strong> jika Anda mengalami kondisi tersebut dalam 30 hari terakhir,
+        atau <strong>Tidak</strong> jika tidak mengalaminya. Jawaban bersifat rahasia dan hanya
+        digunakan untuk membantu pemecahan masalah Anda.
+      </div>
+
+      <div class="section-title">Data Diri</div>
+      <div class="identity-grid">
+        <div class="field-group">
+          <label>Nama Lengkap</label>
+          <input type="text" id="inp-nama" placeholder="Masukkan nama lengkap" />
+        </div>
+        <div class="field-group">
+          <label>Umur</label>
+          <input type="number" id="inp-umur" placeholder="Contoh: 25" min="1" max="120" />
+        </div>
+        <div class="field-group">
+          <label>Nomor HP / WhatsApp</label>
+          <input type="tel" id="inp-hp" placeholder="Contoh: 08123456789" />
+        </div>
+        <div class="field-group">
+          <label>Tanggal Pengisian</label>
+          <input type="text" id="inp-tanggal" placeholder="Tanggal" />
+        </div>
+        <div class="field-group full">
+          <label>Keperluan / Tujuan Pengisian</label>
+          <textarea id="inp-keperluan" placeholder="Contoh: Skrining mandiri, rujukan dari dokter, keperluan penelitian, dll."></textarea>
+        </div>
+      </div>
+
+      <hr class="divider" />
+
+      <div class="progress-wrap">
+        <div class="progress-text">
+          <span>Progress Pertanyaan</span>
+          <span id="prog-count">0 / 29 dijawab</span>
+        </div>
+        <div class="progress-bar-bg">
+          <div class="progress-bar-fill" id="prog-fill"></div>
+        </div>
+      </div>
+
+      <div id="questions-container"></div>
+
+      <button class="submit-btn" id="submit-btn" disabled onclick="showResult()">
+        Lihat Hasil Skoring →
+      </button>
+    </div>
+
+    <!-- RESULT VIEW -->
+    <div id="result-view" class="hidden">
+      <div class="result-header">
+        <h1>Hasil Penilaian SRQ-29</h1>
+      </div>
+      <div class="id-summary" id="id-summary"></div>
+      <div class="score-grid" id="score-grid"></div>
+      <div id="interpretasi-box"></div>
+      <button class="reset-btn" onclick="resetForm()">↺ Isi ulang kuesioner</button>
+    </div>
+
+  </div>
+
+  <script>
+    const questions = [
+      { no: 1,  text: "Apakah Anda sering menderita sakit kepala?", group: "neurosis" },
+      { no: 2,  text: "Apakah Anda kehilangan nafsu makan?", group: "neurosis" },
+      { no: 3,  text: "Apakah tidur Anda tidak lelap?", group: "neurosis" },
+      { no: 4,  text: "Apakah Anda mudah menjadi takut?", group: "neurosis" },
+      { no: 5,  text: "Apakah Anda merasa cemas, tegang dan khawatir?", group: "neurosis" },
+      { no: 6,  text: "Apakah tangan Anda gemetar?", group: "neurosis" },
+      { no: 7,  text: "Apakah Anda mengalami gangguan pencernaan?", group: "neurosis" },
+      { no: 8,  text: "Apakah Anda merasa sulit berpikir jernih?", group: "neurosis" },
+      { no: 9,  text: "Apakah Anda merasa tidak bahagia?", group: "neurosis" },
+      { no: 10, text: "Apakah Anda lebih sering menangis?", group: "neurosis" },
+      { no: 11, text: "Apakah Anda merasa sulit untuk menikmati aktivitas sehari-hari?", group: "neurosis" },
+      { no: 12, text: "Apakah Anda mengalami kesulitan untuk mengambil keputusan?", group: "neurosis" },
+      { no: 13, text: "Apakah aktivitas/tugas sehari-hari Anda terbengkalai?", group: "neurosis" },
+      { no: 14, text: "Apakah Anda merasa tidak mampu berperan dalam kehidupan ini?", group: "neurosis" },
+      { no: 15, text: "Apakah Anda kehilangan minat terhadap banyak hal?", group: "neurosis" },
+      { no: 16, text: "Apakah Anda merasa tidak berharga?", group: "neurosis" },
+      { no: 17, text: "Apakah Anda mempunyai pikiran untuk mengakhiri hidup Anda?", group: "neurosis" },
+      { no: 18, text: "Apakah Anda merasa lelah sepanjang waktu?", group: "neurosis" },
+      { no: 19, text: "Apakah Anda merasa tidak enak di perut?", group: "neurosis" },
+      { no: 20, text: "Apakah Anda mudah lelah?", group: "neurosis" },
+      { no: 21, text: "Apakah Anda minum alkohol lebih banyak dari biasanya atau Apakah Anda menggunakan narkoba?", group: "napza" },
+      { no: 22, text: "Apakah Anda yakin bahwa seseorang mencoba mencelakai Anda dengan cara tertentu?", group: "psikotik" },
+      { no: 23, text: "Apakah ada yang mengganggu atau hal yang tidak biasa dalam pikiran Anda?", group: "psikotik" },
+      { no: 24, text: "Apakah Anda pernah mendengar suara tanpa tahu sumbernya atau yang orang lain tidak dapat mendengar?", group: "psikotik" },
+      { no: 25, text: "Apakah Anda mengalami mimpi yang mengganggu tentang suatu bencana/musibah atau adakah saat-saat Anda seolah mengalami kembali kejadian bencana itu?", group: "ptsd" },
+      { no: 26, text: "Apakah Anda menghindari kegiatan, tempat, orang atau pikiran yang mengingatkan Anda akan bencana tersebut?", group: "ptsd" },
+      { no: 27, text: "Apakah minat Anda terhadap teman dan kegiatan yang biasa Anda lakukan berkurang?", group: "ptsd" },
+      { no: 28, text: "Apakah Anda merasa sangat terganggu jika berada dalam situasi yang mengingatkan Anda akan bencana atau jika Anda berpikir tentang bencana itu?", group: "ptsd" },
+      { no: 29, text: "Apakah Anda kesulitan memahami atau mengekspresikan perasaan Anda?", group: "ptsd" },
+    ];
+
+    const groupMeta = {
+      neurosis: { label: "Gejala Neurosis", badge: "badge-neurosis", range: "No. 1–20" },
+      napza:    { label: "Penggunaan Zat Psikoaktif", badge: "badge-napza", range: "No. 21" },
+      psikotik: { label: "Gejala Psikotik", badge: "badge-psiko", range: "No. 22–24" },
+      ptsd:     { label: "Gejala PTSD", badge: "badge-ptsd", range: "No. 25–29" },
+    };
+
+    const answers = new Array(29).fill(null);
+
+    function buildQuestions() {
+      const c = document.getElementById("questions-container");
+      let lastGroup = null;
+      questions.forEach((q, idx) => {
+        if (q.group !== lastGroup) {
+          lastGroup = q.group;
+          const m = groupMeta[q.group];
+          const gh = document.createElement("div");
+          gh.className = "group-header";
+          gh.innerHTML = `<span class="group-badge ${m.badge}">${m.label}</span><span class="group-range">${m.range}</span>`;
+          c.appendChild(gh);
+        }
+        const item = document.createElement("div");
+        item.className = "q-item";
+        item.innerHTML = `
+          <span class="q-num">${q.no}.</span>
+          <span class="q-text">${q.text}</span>
+          <div class="q-btns">
+            <button class="q-btn" id="ya-${idx}" onclick="setAnswer(${idx},'ya')">Ya</button>
+            <button class="q-btn" id="tidak-${idx}" onclick="setAnswer(${idx},'tidak')">Tidak</button>
+          </div>`;
+        c.appendChild(item);
+      });
+    }
+
+    function setAnswer(idx, val) {
+      answers[idx] = val;
+      document.getElementById(`ya-${idx}`).className = "q-btn" + (val === "ya" ? " ya-active" : "");
+      document.getElementById(`tidak-${idx}`).className = "q-btn" + (val === "tidak" ? " tidak-active" : "");
+      updateProgress();
+    }
+
+    function updateProgress() {
+      const done = answers.filter(a => a !== null).length;
+      document.getElementById("prog-count").textContent = `${done} / 29 dijawab`;
+      document.getElementById("prog-fill").style.width = `${Math.round(done / 29 * 100)}%`;
+      document.getElementById("submit-btn").disabled = done < 29;
+    }
+
+    function showResult() {
+      const nama     = document.getElementById("inp-nama").value || "-";
+      const umur     = document.getElementById("inp-umur").value;
+      const hp       = document.getElementById("inp-hp").value || "-";
+      const tgl      = document.getElementById("inp-tanggal").value || "-";
+      const keperluan = document.getElementById("inp-keperluan").value || "-";
+
+      const neuroScore = answers.slice(0, 20).filter(a => a === "ya").length;
+      const napzaYa    = answers[20] === "ya";
+      const psikoScore = answers.slice(21, 24).filter(a => a === "ya").length;
+      const ptsdScore  = answers.slice(24, 29).filter(a => a === "ya").length;
+
+      document.getElementById("id-summary").innerHTML = `
+        <div class="id-row">Nama: <span>${nama}</span></div>
+        <div class="id-row">Umur: <span>${umur ? umur + " tahun" : "-"}</span></div>
+        <div class="id-row">No. HP: <span>${hp}</span></div>
+        <div class="id-row">Tanggal: <span>${tgl}</span></div>
+        <div class="id-row" style="grid-column:1/-1">Keperluan: <span>${keperluan}</span></div>`;
+
+      document.getElementById("score-grid").innerHTML = `
+        <div class="score-metric"><div class="val">${neuroScore}</div><div class="lbl">Skor Neurosis<br>(dari 20)</div></div>
+        <div class="score-metric"><div class="val">${napzaYa ? "Ya" : "Tidak"}</div><div class="lbl">Zat Psikoaktif<br>(No. 21)</div></div>
+        <div class="score-metric"><div class="val">${psikoScore}</div><div class="lbl">Skor Psikotik<br>(dari 3)</div></div>
+        <div class="score-metric"><div class="val">${ptsdScore}</div><div class="lbl">Skor PTSD<br>(dari 5)</div></div>`;
+
+      let html = `
+        <div class="interp-header">
+          <div class="t">Interpretasi Hasil</div>
+          <div class="s">Berdasarkan panduan skoring SRQ-29 (WHO)</div>
+        </div>`;
+
+      if (neuroScore >= 7)
+        html += `<div class="alert-box alert-danger"><b>Gejala Neurosis — Skor ${neuroScore}/20</b><br>Skor Anda berada di atas ambang batas (≥7). Mengindikasikan kemungkinan adanya masalah psikologis seperti kecemasan, depresi, atau gangguan somatik. Disarankan berkonsultasi dengan profesional kesehatan jiwa.</div>`;
+      else if (neuroScore >= 5)
+        html += `<div class="alert-box alert-warning"><b>Gejala Neurosis — Skor ${neuroScore}/20</b><br>Skor Anda di rentang perhatian (5–6). Ada beberapa gejala yang perlu diperhatikan. Pertimbangkan untuk berbicara dengan tenaga kesehatan.</div>`;
+      else
+        html += `<div class="alert-box alert-success"><b>Gejala Neurosis — Skor ${neuroScore}/20</b><br>Skor Anda di bawah ambang batas. Tidak terindikasi adanya masalah neurosis signifikan dalam 30 hari terakhir.</div>`;
+
+      html += napzaYa
+        ? `<div class="alert-box alert-warning"><b>Penggunaan Zat Psikoaktif (No. 21)</b><br>Jawaban Ya mengindikasikan kemungkinan adanya penggunaan alkohol berlebih atau narkoba. Segera konsultasikan dengan profesional kesehatan.</div>`
+        : `<div class="alert-box alert-success"><b>Penggunaan Zat Psikoaktif (No. 21)</b><br>Tidak terindikasi masalah penggunaan zat psikoaktif.</div>`;
+
+      html += psikoScore >= 1
+        ? `<div class="alert-box alert-danger"><b>Gejala Psikotik — ${psikoScore} jawaban Ya (No. 22–24)</b><br>Mengindikasikan masalah serius yang memerlukan penanganan segera oleh profesional kesehatan jiwa.</div>`
+        : `<div class="alert-box alert-success"><b>Gejala Psikotik — 0 jawaban Ya (No. 22–24)</b><br>Tidak terindikasi gejala psikotik.</div>`;
+
+      html += ptsdScore >= 1
+        ? `<div class="alert-box alert-info"><b>Gejala PTSD — ${ptsdScore} jawaban Ya (No. 25–29)</b><br>Mengindikasikan kemungkinan adanya gejala PTSD (Post Traumatic Stress Disorder). Disarankan berkonsultasi dengan profesional kesehatan jiwa.</div>`
+        : `<div class="alert-box alert-success"><b>Gejala PTSD — 0 jawaban Ya (No. 25–29)</b><br>Tidak terindikasi gejala PTSD.</div>`;
+
+      html += `<div class="alert-box alert-neutral">⚠️ <b>Perhatian:</b> Hasil ini bukan diagnosis klinis. SRQ-29 adalah alat skrining awal. Untuk penilaian yang akurat, konsultasikan dengan dokter, psikolog, atau psikiater.</div>`;
+
+      document.getElementById("interpretasi-box").innerHTML = html;
+      document.getElementById("form-view").classList.add("hidden");
+      document.getElementById("result-view").classList.remove("hidden");
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    function resetForm() {
+      answers.fill(null);
+      document.getElementById("form-view").classList.remove("hidden");
+      document.getElementById("result-view").classList.add("hidden");
+      document.getElementById("questions-container").innerHTML = "";
+      buildQuestions();
+      updateProgress();
+      ["inp-nama","inp-umur","inp-hp","inp-keperluan"].forEach(id => document.getElementById(id).value = "");
+      const d = new Date();
+      document.getElementById("inp-tanggal").value = d.toLocaleDateString("id-ID", { day:"2-digit", month:"long", year:"numeric" });
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    buildQuestions();
+    const d = new Date();
+    document.getElementById("inp-tanggal").value = d.toLocaleDateString("id-ID", { day:"2-digit", month:"long", year:"numeric" });
+  </script>
+</body>
+</html>
